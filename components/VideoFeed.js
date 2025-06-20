@@ -1,4 +1,3 @@
-// components/VideoFeed.js
 import React, { useRef, useState } from 'react';
 import { FlatList, Dimensions } from 'react-native';
 import VideoItem from './VideoItem';
@@ -6,30 +5,34 @@ import mockData from '../data/mockData';
 
 const { height } = Dimensions.get('window');
 
-const VideoFeed = () => {
-  const [currentVisibleIndex, setCurrentVisibleIndex] = useState(0);
-  const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 80 }).current;
+export default function VideoFeed() {
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  const onViewableItemsChanged = useRef(({ viewableItems }) => {
+  // Update which item is “active” (>=80% visible)
+  const onViewRef = useRef(({ viewableItems }) => {
     if (viewableItems.length > 0) {
-      setCurrentVisibleIndex(viewableItems[0].index);
+      setCurrentIndex(viewableItems[0].index);
     }
   }).current;
+  const viewConfigRef = useRef({ viewAreaCoveragePercentThreshold: 80 }).current;
 
   return (
     <FlatList
       data={mockData}
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item, index }) => (
-        <VideoItem
-          item={item}
-          isActive={index === currentVisibleIndex}
-        />
+        <VideoItem item={item} isActive={index === currentIndex} />
       )}
-      pagingEnabled
+      pagingEnabled                     // snap to one item at a time
+      snapToInterval={height}           // exactly screen‐height pages
+      decelerationRate="fast"           // fast stop on release
       showsVerticalScrollIndicator={false}
-      onViewableItemsChanged={onViewableItemsChanged}
-      viewabilityConfig={viewabilityConfig}
+      removeClippedSubviews             // unmount offscreen items
+      initialNumToRender={1}
+      maxToRenderPerBatch={2}
+      windowSize={3}
+      onViewableItemsChanged={onViewRef}
+      viewabilityConfig={viewConfigRef}
       getItemLayout={(_, index) => ({
         length: height,
         offset: height * index,
@@ -37,6 +40,4 @@ const VideoFeed = () => {
       })}
     />
   );
-};
-
-export default VideoFeed;
+}
