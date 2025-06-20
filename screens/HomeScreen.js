@@ -1,16 +1,14 @@
-// screens/HomeScreen.js
 import React from 'react';
-import { View, StyleSheet, StatusBar } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import VideoFeed from '../components/VideoFeed';
 
-const HomeScreen = () => {
+export default function HomeScreen() {
   return (
     <View style={styles.container}>
-      <StatusBar hidden />
       <VideoFeed />
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -18,5 +16,3 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
   },
 });
-
-export default HomeScreen;
