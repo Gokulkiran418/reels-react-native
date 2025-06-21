@@ -84,6 +84,24 @@ function VideoItem({ item, isActive }) {
   const [isPaused, setIsPaused] = useState(!isActive);
   const [isFollowing, setIsFollowing] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const [likesCount, setLikesCount] = useState(item.likes);
+  const [liked, setLiked] = useState(false);
+
+  const handleToggleLike = useCallback(() => {
+  // Optimistically update
+  setLiked((prev) => !prev);
+  setLikesCount((prev) => (liked ? prev - 1 : prev + 1));
+
+  // Simulate API call
+  setTimeout(() => {
+    const didFail = Math.random() < 0.2; // 20% chance to fail
+    if (didFail) {
+      // Revert on failure
+      setLiked((prev) => !prev);
+      setLikesCount(item.likes);
+    }
+  }, 1000);
+}, [liked, item.likes]);
 
   // Auto play/pause when visibility changes
   useEffect(() => {
@@ -230,8 +248,19 @@ function VideoItem({ item, isActive }) {
 
       {/* Right Overlay */}
       <View style={[styles.rightOverlay, dynamicStyles.rightOverlay]}>
-        <Ionicons name="heart" size={35} color="#fff" style={styles.icon} />
-        <Text style={styles.iconText}>{formattedLikes}</Text>
+        <TouchableOpacity
+        onPress={handleToggleLike}
+        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        activeOpacity={0.6}
+      >
+        <Ionicons
+          name={liked ? 'heart' : 'heart-outline'}
+          size={35}
+          color={liked ? '#ff4444' : '#fff'}
+          style={styles.icon}
+        />
+      </TouchableOpacity>
+      <Text style={styles.iconText}>{likesCount}</Text>
         <Ionicons
           name="chatbubble"
           size={35}
