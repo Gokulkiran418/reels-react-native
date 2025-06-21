@@ -8,7 +8,8 @@
  * Handles play/pause on tap, auto-play when in view, and navigation to profile.
  */
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback, useMemo } from 'react';
+import { Animated } from 'react-native';
 import {
   View,
   Text,
@@ -26,10 +27,19 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { height } = Dimensions.get('window');
 
-export default function VideoItem({ item, isActive }) {
+function VideoItem({ item, isActive }) {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const videoRef = useRef(null);
+  const hashtag = useMemo(() => `#${item.title.split(' ')[0]}`, [item.title]);
+  const formattedLikes = useMemo(() => item.likes.toLocaleString(), [item.likes]);
+  const formattedComments = useMemo(() => item.comments.toLocaleString(), [item.comments]);
+  const formattedShares = useMemo(() => item.shares.toLocaleString(), [item.shares]);
+  const formattedEarnings = useMemo(() => `₹ ${item.earnings.toLocaleString()}`, [item.earnings]);
+  const scaleValue = useRef(new Animated.Value(1)).current;
+
+
+
 
   // Local UI state
   const [isMuted, setIsMuted] = useState(true);
@@ -46,28 +56,52 @@ export default function VideoItem({ item, isActive }) {
   }, [isActive]);
 
   // Toggle play/pause on tap
-  const handleTogglePlay = () => {
-    if (videoRef.current) {
-      isPaused ? videoRef.current.playAsync() : videoRef.current.pauseAsync();
-      setIsPaused(!isPaused);
-    }
-  };
+const handleTogglePlay = useCallback(() => {
+  if (videoRef.current) {
+    isPaused ? videoRef.current.playAsync() : videoRef.current.pauseAsync();
+    setIsPaused((prev) => !prev);
+  }
+}, [isPaused]);
 
   // Other toggles
-  const handleToggleMute = () => setIsMuted((prev) => !prev);
-  const handleToggleFollow = () => setIsFollowing((prev) => !prev);
-  const handleToggleDescription = () => setShowFullDescription((prev) => !prev);
+  const handleToggleMute = useCallback(() => {
+  setIsMuted((prev) => !prev);
+}, []);
+
+const handleToggleFollow = useCallback(() => {
+  Animated.sequence([
+    Animated.timing(scaleValue, {
+      toValue: 1.2,
+      duration: 150,
+      useNativeDriver: true,
+    }),
+    Animated.spring(scaleValue, {
+      toValue: 1,
+      friction: 3,
+      useNativeDriver: true,
+    }),
+  ]).start();
+
+  setIsFollowing((prev) => !prev);
+}, [scaleValue]);
+
+
+const handleToggleDescription = useCallback(() => {
+  setShowFullDescription((prev) => !prev);
+}, []);
 
   // Navigate to profile screen with params
-  const goToProfile = () =>
-    navigation.navigate('Profile', {
-      userName: item.userName,
-      userImage: item.userImage,
-    });
+  const goToProfile = useCallback(() => {
+  navigation.navigate('Profile', {
+    userName: item.userName,
+    userImage: item.userImage,
+  });
+}, [navigation, item.userName, item.userImage]);
 
   return (
     <View style={styles.container}>
       <TouchableWithoutFeedback onPress={handleTogglePlay}>
+       <View style={StyleSheet.absoluteFill}>
         <Video
           ref={videoRef}
           source={item.videoUrl}
@@ -77,23 +111,29 @@ export default function VideoItem({ item, isActive }) {
           shouldPlay={isActive && !isPaused}
           isMuted={isMuted}
         />
+        {isPaused && (
+          <View style={styles.playButtonContainer}>
+            <Ionicons name="play" size={60} color="#fff" />
+          </View>
+        )}
+    </View>
       </TouchableWithoutFeedback>
 
       {/* Left Overlay */}
       <View style={styles.leftOverlay}>
-        <Text style={styles.hashtag}>#{item.title.split(' ')[0]}</Text>
-
+        <Text style={styles.hashtag}>{hashtag}</Text>
         <TouchableOpacity style={styles.profileRow} onPress={goToProfile}>
           <Image source={item.userImage} style={styles.profilePic} />
           <Text style={styles.creatorName}>{item.userName}</Text>
-          <TouchableOpacity
-            onPress={handleToggleFollow}
-            style={styles.followButton}
-          >
+          
+         <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
+          <TouchableOpacity onPress={handleToggleFollow} style={styles.followButton}>
             <Text style={styles.followText}>
               {isFollowing ? 'Following' : 'Follow'}
             </Text>
           </TouchableOpacity>
+        </Animated.View>
+
         </TouchableOpacity>
 
         <Text style={styles.title}>{item.title}</Text>
@@ -125,23 +165,23 @@ export default function VideoItem({ item, isActive }) {
       {/* Right Overlay */}
       <View style={styles.rightOverlay}>
         <Ionicons name="heart" size={35} color="#fff" style={styles.icon} />
-        <Text style={styles.iconText}>{item.likes.toLocaleString()}</Text>
+        <Text style={styles.iconText}>{formattedLikes}</Text>
         <Ionicons
           name="chatbubble"
           size={35}
           color="#fff"
           style={styles.icon}
         />
-        <Text style={styles.iconText}>{item.comments.toLocaleString()}</Text>
+        <Text style={styles.iconText}>{formattedComments}</Text>
         <Ionicons
           name="share-social"
           size={35}
           color="#fff"
           style={styles.icon}
         />
-        <Text style={styles.iconText}>{item.shares.toLocaleString()}</Text>
+        <Text style={styles.iconText}>{formattedShares}</Text>
         <Ionicons name="cash" size={35} color="#fff" style={styles.icon} />
-        <Text style={styles.iconText}>₹ {item.earnings.toLocaleString()}</Text>
+        <Text style={styles.iconText}>{formattedEarnings}</Text>
         <Ionicons
           name="ellipsis-vertical"
           size={35}
@@ -269,4 +309,21 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
     alignSelf: 'flex-start',
   },
+  playButtonContainer: {
+  position: 'absolute',
+  top: '45%',
+  left: '45%',
+  zIndex: 20,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+
+});
+
+
+export default React.memo(VideoItem, (prevProps, nextProps) => {
+  return (
+    prevProps.isActive === nextProps.isActive &&
+    prevProps.item.id === nextProps.item.id
+  );
 });
