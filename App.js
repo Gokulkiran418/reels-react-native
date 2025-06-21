@@ -2,7 +2,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import BottomNav from './components/BottomNav';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import HomeScreen from './screens/HomeScreen';
@@ -14,29 +14,7 @@ export default function App() {
   return (
       <SafeAreaProvider>
     <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          headerShown: false,
-          tabBarActiveTintColor: '#ffcc00',
-          tabBarInactiveTintColor: 'gray',
-          tabBarStyle: { backgroundColor: '#000' },
-          tabBarIcon: ({ color, size }) => {
-            let iconName;
-            if (route.name === 'Home') iconName = 'home';
-            else if (route.name === 'Shorts') iconName = 'videocam';
-            else if (route.name === 'Add') iconName = 'add-circle';
-            else if (route.name === 'Search') iconName = 'search';
-            else if (route.name === 'Profile') iconName = 'person';
-            return <Ionicons name={iconName} size={size} color={color} />;
-          },
-        })}
-      >
-        <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Shorts" component={HomeScreen} />
-        <Tab.Screen name="Add" component={HomeScreen} />
-        <Tab.Screen name="Search" component={HomeScreen} />
-        <Tab.Screen name="Profile" component={ProfileScreen} />
-      </Tab.Navigator>
+        <BottomNav />
     </NavigationContainer>
     </SafeAreaProvider>
   );
