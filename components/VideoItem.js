@@ -1,3 +1,13 @@
+// components/VideoItem.js
+
+/**
+ * VideoItem
+ * Renders a full-screen video with overlays:
+ * - Left: hashtag, creator info, title, description, paid badge, mute toggle
+ * - Right: action icons (like, comment, share, earnings, more)
+ * Handles play/pause on tap, auto-play when in view, and navigation to profile.
+ */
+
 import React, { useRef, useState, useEffect } from 'react';
 import {
   View,
@@ -8,43 +18,47 @@ import {
   Dimensions,
   TouchableWithoutFeedback,
 } from 'react-native';
+import PropTypes from 'prop-types';
 import { Video } from 'expo-av';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const { height, width } = Dimensions.get('window');
+const { height } = Dimensions.get('window');
 
 export default function VideoItem({ item, isActive }) {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const videoRef = useRef(null);
 
+  // Local UI state
   const [isMuted, setIsMuted] = useState(true);
   const [isPaused, setIsPaused] = useState(!isActive);
   const [isFollowing, setIsFollowing] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
 
+  // Auto play/pause when item becomes active/inactive
   useEffect(() => {
     setIsPaused(!isActive);
     if (videoRef.current) {
-      if (isActive) {
-        videoRef.current.playAsync();
-      } else {
-        videoRef.current.pauseAsync();
-      }
+      isActive ? videoRef.current.playAsync() : videoRef.current.pauseAsync();
     }
   }, [isActive]);
 
+  // Toggle play/pause on tap
   const handleTogglePlay = () => {
     if (videoRef.current) {
       isPaused ? videoRef.current.playAsync() : videoRef.current.pauseAsync();
       setIsPaused(!isPaused);
     }
   };
+
+  // Other toggles
   const handleToggleMute = () => setIsMuted((prev) => !prev);
   const handleToggleFollow = () => setIsFollowing((prev) => !prev);
   const handleToggleDescription = () => setShowFullDescription((prev) => !prev);
+
+  // Navigate to profile screen with params
   const goToProfile = () =>
     navigation.navigate('Profile', {
       userName: item.userName,
@@ -72,7 +86,10 @@ export default function VideoItem({ item, isActive }) {
         <TouchableOpacity style={styles.profileRow} onPress={goToProfile}>
           <Image source={item.userImage} style={styles.profilePic} />
           <Text style={styles.creatorName}>{item.userName}</Text>
-          <TouchableOpacity onPress={handleToggleFollow} style={styles.followButton}>
+          <TouchableOpacity
+            onPress={handleToggleFollow}
+            style={styles.followButton}
+          >
             <Text style={styles.followText}>
               {isFollowing ? 'Following' : 'Follow'}
             </Text>
@@ -109,25 +126,63 @@ export default function VideoItem({ item, isActive }) {
       <View style={styles.rightOverlay}>
         <Ionicons name="heart" size={35} color="#fff" style={styles.icon} />
         <Text style={styles.iconText}>{item.likes.toLocaleString()}</Text>
-        <Ionicons name="chatbubble" size={35} color="#fff" style={styles.icon} />
+        <Ionicons
+          name="chatbubble"
+          size={35}
+          color="#fff"
+          style={styles.icon}
+        />
         <Text style={styles.iconText}>{item.comments.toLocaleString()}</Text>
-        <Ionicons name="share-social" size={35} color="#fff" style={styles.icon} />
+        <Ionicons
+          name="share-social"
+          size={35}
+          color="#fff"
+          style={styles.icon}
+        />
         <Text style={styles.iconText}>{item.shares.toLocaleString()}</Text>
         <Ionicons name="cash" size={35} color="#fff" style={styles.icon} />
         <Text style={styles.iconText}>₹ {item.earnings.toLocaleString()}</Text>
-        <Ionicons name="ellipsis-vertical" size={35} color="#fff" style={styles.icon} />
+        <Ionicons
+          name="ellipsis-vertical"
+          size={35}
+          color="#fff"
+          style={styles.icon}
+        />
       </View>
     </View>
   );
 }
 
+// PropTypes for runtime type-checking of props
+VideoItem.propTypes = {
+  item: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    videoUrl: PropTypes.oneOfType([
+      PropTypes.number, // local require()
+      PropTypes.object, // { uri: string }
+    ]).isRequired,
+    title: PropTypes.string.isRequired,
+    episode: PropTypes.string,
+    description: PropTypes.string,
+    userName: PropTypes.string.isRequired,
+    userImage: PropTypes.oneOfType([PropTypes.number, PropTypes.object])
+      .isRequired,
+    likes: PropTypes.number,
+    comments: PropTypes.number,
+    shares: PropTypes.number,
+    earnings: PropTypes.number,
+    isPaid: PropTypes.bool,
+  }).isRequired,
+  isActive: PropTypes.bool.isRequired,
+};
+
 const styles = StyleSheet.create({
   container: {
-    height: height,
+    height,
     width: '100%',
     position: 'relative',
     backgroundColor: '#000',
-    overflow: 'hidden', // ✅ Prevent overlapping issues
+    overflow: 'hidden', // prevent overlapping when scrolling
   },
   leftOverlay: {
     position: 'absolute',
@@ -142,10 +197,6 @@ const styles = StyleSheet.create({
     right: 12,
     alignItems: 'center',
     zIndex: 10,
-  },
-  video: {
-    width: '100%',
-    height: '100%',
   },
   icon: {
     marginBottom: 6,

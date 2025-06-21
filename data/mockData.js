@@ -1,5 +1,10 @@
 // data/mockData.js
 
+/**
+ * mockData.js
+ * Provides mock video feed data used in the application.
+ * Each object simulates a video post with user and engagement details.
+ */
 
 export default [
   {
@@ -8,7 +13,7 @@ export default [
     title: 'skater',
     episode: 'EP 01',
     description:
-      'searching for a murderer whose deadly honeymoon is tragically cut short. As new clues emerge and the suspect list grows longer, the team races against time in a tense and unpredictable thriller.',
+      'Searching for a murderer whose deadly honeymoon is tragically cut short. As new clues emerge and the suspect list grows longer, the team races against time in a tense and unpredictable thriller.',
     userName: 'Gabar Singh',
     userImage: require('../assets/profilepic/skateboard.jpg'),
     likes: 200000,
@@ -23,7 +28,7 @@ export default [
     title: 'TRAVEL',
     episode: 'EP 02',
     description:
-      'exploring hidden gems in the mountains made me realise there is more to life than gems. But after realising there was more to life i realised i could have found the gems and used to buy car',
+      'Exploring hidden gems in the mountains made me realise there is more to life than gems. But after realising there was more to life I realised I could have found the gems and used them to buy a car.',
     userName: 'Priya Sharma',
     userImage: require('../assets/profilepic/amodel.jpg'),
     likes: 150000,
@@ -53,7 +58,7 @@ export default [
     title: 'dancingguy',
     episode: 'EP 10',
     description:
-      'Lost in the rhythm, found in the dance or Dancing through life, one step at a time. Let the music move you; unleash your inner dancer. Dance is the hidden language of the soul.',
+      'Lost in the rhythm, found in the dance. Dancing through life, one step at a time. Let the music move you; unleash your inner dancer. Dance is the hidden language of the soul.',
     userName: 'Anderson',
     userImage: require('../assets/profilepic/dancer.jpg'),
     likes: 150,
