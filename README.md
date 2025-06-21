@@ -1,50 +1,100 @@
-# Welcome to your Expo app 👋
+# 🎬 ReelsPlayerApp (React Native)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A modern, full-featured **short video feed mobile application** built using **React Native (Expo)**. This project replicates a TikTok/Instagram Reels-style UI with vertical scrolling videos, interactive overlays, and a clean, responsive layout.
 
-## Get started
+---
+### Tech Stack
 
-1. Install dependencies
+- react native
 
-   ```bash
-   npm install
-   ```
+- @react-navigation for screen navigation
 
-2. Start the app
+- @react-native-async-storage/async-storage for persistent login
 
-   ```bash
-   npx expo start
-   ```
+- Jest + @testing-library/react-native for testing
 
-In the output, you'll find options to open the app in a
+- React.memo, useCallback, useMemo for performance
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+### Getting started
 
 ```bash
-npm run reset-project
+git clone https://github.com/Gokulkiran418/reels-react-native.git
+cd reels-react-native
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+# Start the Expo server
+```bash
+npx expo start
+```
+- Open local link from terminal 
+- or
+- Download expo go app
+- Scan QR code
 
-## Learn more
+## 📱 Features
 
-To learn more about developing your project with Expo, look at the following resources:
+### 🎥 Core Video Feed
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- Infinite vertical scroll (`FlatList`) — one video per screen
+- Auto-play on scroll into view
+- Tap to **play/pause**, **mute/unmute**
+- Optimized video loading and performance
 
-## Join the community
+### 🧑‍🎤 Creator Overlay UI
 
-Join our community of developers creating universal apps.
+- Hashtag + Creator name (with "Follow" toggle)
+- Title, Episode tag, and 3-line clamped description
+- Right-side interaction bar:
+  - ❤️ Like count
+  - 💬 Comment count
+  - 🔄 Share count
+  - 💸 Tips earned
+  - ⋮ Options menu
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### 🔐 Authentication
+
+- Dummy login flow
+- User ID stored in `AsyncStorage`
+- Blocks feed access unless logged in
+
+### 📦 Mock Data & Simulated API
+
+- Uses mock data file (`mockData.js`)
+- Simulates async API fetch with delay
+- Handles loading and API failure gracefully
+
+---
+
+### ⚙️ Global State Management
+
+- Built using React Context API (`AppContext.js`)
+- Handles:
+  - `userID` login state
+  - Liked videos (per session)
+  - Global auth logic
+
+---
+
+## 🚀 Bonus Features
+
+
+
+| Feature                         | Status |
+|----------------------------------|--------|
+| Optimistic UI (Like button)      | ✅     |
+| Infinite scroll (pagination)     | ✅     |
+| Dummy login & access control     | ✅     |
+| Global state (Context API)       | ✅     |
+| Basic unit testing (Jest)        | ✅     |
+
+---
+
+## 🧪 Unit Testing
+
+Tests are written using **Jest** and **React Native Testing Library**.
+
+### Example test:
+
+```bash
+npm test
