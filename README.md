@@ -1,4 +1,4 @@
-# 🎬 ReelsPlayerApp (React Native)
+# 🎬 Reels Player App (React Native)
 
 A modern, full-featured **short video feed mobile application** built using **React Native (Expo)**. This project replicates a TikTok/Instagram Reels-style UI with vertical scrolling videos, interactive overlays, and a clean, responsive layout.
 
